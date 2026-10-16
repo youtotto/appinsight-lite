@@ -23,11 +23,11 @@ Liteの「未検出」は削除して安全であることを保証しません�
 
 | ファイル | 用途 |
 |---|---|
-| `appinsight-lite-1.3.1-free-bundle.zip` | 説明書付きの配布用 ZIP（おすすめ）。**ZIP を解凍し、中の `appinsight-lite-1.3.1-free-plugin.zip` を kintone へ読み込みます。bundle 自体は kintone に直接読み込みません** |
-| `appinsight-lite-1.3.1-free-plugin.zip` | kintone に直接読み込むプラグイン（bundle の中身と同じファイル） |
+| `appinsight-lite-1.3.2-free-bundle.zip` | 説明書付きの配布用 ZIP（おすすめ）。**ZIP を解凍し、中の `appinsight-lite-1.3.2-free-plugin.zip` を kintone へ読み込みます。bundle 自体は kintone に直接読み込みません** |
+| `appinsight-lite-1.3.2-free-plugin.zip` | kintone に直接読み込むプラグイン（bundle の中身と同じファイル） |
 | `SHA256SUMS.txt` | 上記 ZIP の SHA-256 |
 
-kintone への読み込みは、kintone システム管理 →「プラグイン」→「読み込む」で `appinsight-lite-1.3.1-free-plugin.zip` を ZIP のまま選びます。
+kintone への読み込みは、kintone システム管理 →「プラグイン」→「読み込む」で `appinsight-lite-1.3.2-free-plugin.zip` を ZIP のまま選びます。
 
 「このフィールド、どこで使っていたっけ？」を確認するための無料 kintone プラグインです。
 
@@ -119,7 +119,7 @@ kintone への読み込みは、kintone システム管理 →「プラグイン
 
 ## 更新履歴
 
-### 1.3.1
+### 1.3.2
 - 設定画面と導入説明を整理しました。解析機能の変更はありません。
 
 
