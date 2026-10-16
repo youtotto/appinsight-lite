@@ -14,12 +14,12 @@ Liteの「未検出」は削除して安全であることを保証しません�
 
 ## 公式リンク
 
-- [無料版の配布ページ](https://github.com/youtotto/kintone-field-usage-checker-plugin)
-- [紹介ページ](https://github.com/youtotto/kintone-field-usage-checker-plugin#readme)
+- [無料版の配布ページ](https://github.com/youtotto/appinsight-lite)
+- [紹介ページ](https://github.com/youtotto/appinsight-lite#readme)
 
 ## ダウンロードと導入
 
-[Releases](https://github.com/youtotto/kintone-field-usage-checker-plugin/releases/latest) から次のファイルをダウンロードします。
+[Releases](https://github.com/youtotto/appinsight-lite/releases/latest) から次のファイルをダウンロードします。
 
 | ファイル | 用途 |
 |---|---|
@@ -174,4 +174,4 @@ https://kintone.dev/en/docs/kintone/rest-api/files/download-file/
 
 ## 問い合わせ・不具合報告
 
-[GitHub Issues](https://github.com/youtotto/kintone-field-usage-checker-plugin/issues)へ、版、再現操作、期待結果と実際の結果をお知らせください。認証情報、テナント名、個人情報や業務データは載せないでください。
+[GitHub Issues](https://github.com/youtotto/appinsight-lite/issues)へ、版、再現操作、期待結果と実際の結果をお知らせください。認証情報、テナント名、個人情報や業務データは載せないでください。

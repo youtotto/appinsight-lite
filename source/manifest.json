@@ -11,8 +11,8 @@
     "ja": "このアプリのフィールド使用箇所と登録済みJSの参照候補を確認。検索・型別絞り込み・メモ・CSV出力に対応する無料ツールです。他アプリからの参照は対象外です。"
   },
   "homepage_url": {
-    "en": "https://github.com/youtotto/kintone-field-usage-checker-plugin#readme",
-    "ja": "https://github.com/youtotto/kintone-field-usage-checker-plugin#readme"
+    "en": "https://github.com/youtotto/appinsight-lite#readme",
+    "ja": "https://github.com/youtotto/appinsight-lite#readme"
   },
   "icon": "image/icon.png",
   "desktop": {
