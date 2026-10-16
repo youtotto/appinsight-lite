@@ -1,18 +1,16 @@
-# AppInsight Lite（旧フィールド使用状況チェッカー）
+# AppInsight Lite
 
 
 
 ## AppInsightシリーズでの役割
 
-AppInsight Liteは、1つのアプリ内のフィールド使用箇所を点検する無料版です。検索・フィルター、フィールドごとのメモ、詳細画面でのコード表示を引き継ぎます。
+AppInsight Liteは、1つのアプリ内のフィールド使用箇所を点検する無料版です。検索・フィルター、フィールドごとのメモ、詳細画面でのコード表示を利用できます。
 
 - **Lite（無料）**: 現在のアプリ設定とアップロード済みJavaScriptから、フィールドの使用箇所・参照候補を確認。
 - **AppInsight**: JavaScriptや他アプリからの参照を含め、構成・依存関係・変更影響を調査。
 - **AppInsight AI Review**: 解析結果の読み解き、確認事項と改善案の整理を支援。
 
-Liteの「未検出」は削除して安全であることを保証しません。対象外と取得失敗の注意は従来どおりです。
-
-旧フィールド使用状況チェッカーから、同じプラグインIDで更新できます。設定保存形式は維持しています。同一ドメインでこのプラグインを使用するアプリすべてに更新が適用されます。更新前にメモ・設定を控えてください。
+Liteの「未検出」は削除して安全であることを保証しません。対象外の範囲や取得失敗も確認してください。
 
 ## 公式リンク
 
@@ -25,11 +23,11 @@ Liteの「未検出」は削除して安全であることを保証しません�
 
 | ファイル | 用途 |
 |---|---|
-| `appinsight-lite-1.3.0-free-bundle.zip` | 説明書付きの配布用 ZIP（おすすめ）。**ZIP を解凍し、中の `appinsight-lite-1.3.0-free-plugin.zip` を kintone へ読み込みます。bundle 自体は kintone に直接読み込みません** |
-| `appinsight-lite-1.3.0-free-plugin.zip` | kintone に直接読み込むプラグイン（bundle の中身と同じファイル） |
+| `appinsight-lite-1.3.1-free-bundle.zip` | 説明書付きの配布用 ZIP（おすすめ）。**ZIP を解凍し、中の `appinsight-lite-1.3.1-free-plugin.zip` を kintone へ読み込みます。bundle 自体は kintone に直接読み込みません** |
+| `appinsight-lite-1.3.1-free-plugin.zip` | kintone に直接読み込むプラグイン（bundle の中身と同じファイル） |
 | `SHA256SUMS.txt` | 上記 ZIP の SHA-256 |
 
-kintone への読み込みは、kintone システム管理 →「プラグイン」→「読み込む」で `appinsight-lite-1.3.0-free-plugin.zip` を ZIP のまま選びます。
+kintone への読み込みは、kintone システム管理 →「プラグイン」→「読み込む」で `appinsight-lite-1.3.1-free-plugin.zip` を ZIP のまま選びます。
 
 「このフィールド、どこで使っていたっけ？」を確認するための無料 kintone プラグインです。
 
@@ -120,6 +118,10 @@ kintone への読み込みは、kintone システム管理 →「プラグイン
 ---
 
 ## 更新履歴
+
+### 1.3.1
+- 設定画面と導入説明を整理しました。解析機能の変更はありません。
+
 
 ### v1.3.0
 - AppInsight Liteへ名称変更。既存ID・設定形式を継続。
