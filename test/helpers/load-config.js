@@ -29,6 +29,7 @@ async function loadConfigScreen({
   related = { [fx.RELATED_APP_ID]: fx.relatedAppProperties() },
   fail = {},
   guestSpaceId = null,
+  scripts = {},
   appId = fx.APP_ID
 } = {}) {
   const html = fs.readFileSync(CONFIG_HTML, 'utf8');
@@ -44,9 +45,18 @@ async function loadConfigScreen({
   window.console.error = (...a) => logs.push(a.map(String).join(' '));
   window.console.log = () => {};
 
+  window.AbortController = AbortController;
+  window.TextDecoder = TextDecoder;
+  window.fetch = async (url, options) => {
+    const key = new URL(url).searchParams.get('fileKey');
+    if (!(key in scripts)) return {ok:false,status:403};
+    if (scripts[key] instanceof Error) throw scripts[key];
+    return {ok:true,body:new ReadableStream({start(controller){controller.enqueue(new TextEncoder().encode(scripts[key]));controller.close();}})};
+  };
   let saved = null;
   const calls = [];
   const routes = {
+    '/k/v1/app/customize': () => settings.customize || {scope:'ALL',desktop:{js:[]},mobile:{js:[]}},
     '/k/v1/app/views': () => settings.views,
     '/k/v1/app/notifications/general': () => settings.general,
     '/k/v1/app/notifications/perRecord': () => settings.perRecord,
@@ -91,6 +101,8 @@ async function loadConfigScreen({
     } }
   };
 
+  window.eval(fs.readFileSync(path.resolve(__dirname, '../../source/vendor/acorn.js'), 'utf8'));
+  window.eval(fs.readFileSync(path.resolve(__dirname, '../../source/js/js-analysis.js'), 'utf8'));
   window.eval(fs.readFileSync(CONFIG_JS, 'utf8'));
   await wait(120);
 

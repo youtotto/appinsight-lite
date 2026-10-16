@@ -6,6 +6,7 @@
     "test": "node --test \"test/**/*.test.js\""
   },
   "devDependencies": {
+    "acorn": "8.15.0",
     "jsdom": "29.1.1"
   }
 }

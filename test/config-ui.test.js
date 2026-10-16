@@ -16,8 +16,8 @@ test('S-1 正常系: スピナーが消え、表・ツールバー・注意書�
   assert.equal(screen.tableShown(), true);
   assert.equal(screen.message(), '');
   assert.ok(screen.rows().length > 30);
-  assert.match(screen.notice(), /「未検出」は、そのフィールドが削除して安全であることを保証するものではありません/);
-  assert.match(screen.notice(), /JavaScript カスタマイズや他アプリからの参照など、一部は対象外です/);
+  assert.match(screen.notice(), /「未検出」でも削除の安全は保証されません/);
+  assert.match(screen.notice(), /他アプリからの参照は対象外です/);
   assert.match(screen.notice(), /AppInsight for kintone/);
 });
 
@@ -219,11 +219,11 @@ test('S-17 config.html は body 断片で、script 参照が無く、クラス�
 test('S-18 manifest: licenseChecker / kuc を含まず、単一ビルド（Trial 分岐なし）', () => {
   const manifest = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../source/manifest.json'), 'utf8'));
   assert.deepEqual(manifest.desktop.js, ['js/desktop.js']);
-  assert.deepEqual(manifest.config.js, ['js/config.js']);
-  assert.equal(manifest.version, '1.2.0');
+  assert.deepEqual(manifest.config.js, ['vendor/acorn.js', 'js/js-analysis.js', 'js/config.js']);
+  assert.equal(manifest.version, '1.3.0');
   assert.doesNotMatch(manifest.name.ja, /試用版/);
   const files = fs.readdirSync(path.resolve(__dirname, '../source/js'));
-  assert.deepEqual(files.sort(), ['config.js', 'desktop.js']);
+  assert.deepEqual(files.sort(), ['config.js', 'desktop.js', 'js-analysis.js']);
   const src = fs.readFileSync(path.resolve(__dirname, '../source/js/config.js'), 'utf8') + fs.readFileSync(path.resolve(__dirname, '../source/js/desktop.js'), 'utf8');
   assert.doesNotMatch(src, /licenseChecker|checkLicense|Kucs|nestrec\.com|productId/);
   assert.doesNotMatch(src, /innerHTML/);

@@ -1,18 +1,18 @@
 {
   "manifest_version": 1,
-  "version": "1.2.0",
+  "version": "1.3.0",
   "type": "APP",
   "name": {
-    "en": "Field Usage Checker",
-    "ja": "フィールド使用状況チェッカー"
+    "en": "AppInsight Lite",
+    "ja": "AppInsight Lite"
   },
   "description": {
-    "en": "Lists every field in the app with its name, code, type and where it is used in the app settings (calculations, lookups, views, notifications, process management, graphs, actions, permissions).",
-    "ja": "フィールド名称・コード・フィールド型と、アプリ設定内（計算式・ルックアップ・一覧・通知・プロセス管理・グラフ・アクション・アクセス権）での使用箇所を一覧で確認できる無料プラグインです。"
+    "en": "Inspect field usage in this app and static reference candidates in uploaded JavaScript. Includes filters, notes and CSV export. Incoming references from other apps are out of scope.",
+    "ja": "このアプリのフィールド使用箇所と登録済みJSの参照候補を確認。検索・型別絞り込み・メモ・CSV出力に対応する無料ツールです。他アプリからの参照は対象外です。"
   },
   "homepage_url": {
-    "en": "https://www.nestrec.com/post/kintone-free-plugins-renewal",
-    "ja": "https://www.nestrec.com/post/kintone-free-plugins-renewal"
+    "en": "https://github.com/youtotto/kintone-field-usage-checker-plugin#readme",
+    "ja": "https://github.com/youtotto/kintone-field-usage-checker-plugin#readme"
   },
   "icon": "image/icon.png",
   "desktop": {
@@ -26,6 +26,8 @@
   "config": {
     "html": "config.html",
     "js": [
+      "vendor/acorn.js",
+      "js/js-analysis.js",
       "js/config.js"
     ],
     "css": [

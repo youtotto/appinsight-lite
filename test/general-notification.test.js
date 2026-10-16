@@ -84,8 +84,8 @@ test('W-1 文言: source のユーザー向け文字列に削除安全性を断�
   });
   const html = fs.readFileSync(path.join(root, 'config.html'), 'utf8');
   assert.match(html, /未検出/);
-  /* 唯一の「安全」は注意書きの否定文（削除して安全であることを保証するものではありません）だけ */
+  /* 唯一の「安全」は注意書きの否定文（削除の安全は保証されません）だけ */
   const safeMentions = html.match(/安全/g) || [];
   assert.equal(safeMentions.length, 1);
-  assert.match(html, /削除して安全であることを保証するものではありません/);
+  assert.match(html, /削除の安全は保証されません/);
 });

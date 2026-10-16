@@ -1,9 +1,23 @@
-# フィールド使用状況チェッカー（Field Usage Checker）
+# AppInsight Lite（旧フィールド使用状況チェッカー）
+
+
+
+## AppInsightシリーズでの役割
+
+AppInsight Liteは、1つのアプリ内のフィールド使用箇所を点検する無料版です。検索・フィルター、フィールドごとのメモ、詳細画面でのコード表示を引き継ぎます。
+
+- **Lite（無料）**: 現在のアプリ設定とアップロード済みJavaScriptから、フィールドの使用箇所・参照候補を確認。
+- **AppInsight**: JavaScriptや他アプリからの参照を含め、構成・依存関係・変更影響を調査。
+- **AppInsight AI Review**: 解析結果の読み解き、確認事項と改善案の整理を支援。
+
+Liteの「未検出」は削除して安全であることを保証しません。対象外と取得失敗の注意は従来どおりです。
+
+旧フィールド使用状況チェッカーから、同じプラグインIDで更新できます。設定保存形式は維持しています。同一ドメインでこのプラグインを使用するアプリすべてに更新が適用されます。更新前にメモ・設定を控えてください。
 
 ## 公式リンク
 
 - [無料版の配布ページ](https://github.com/youtotto/kintone-field-usage-checker-plugin)
-- [紹介ページ](https://www.nestrec.com/post/kintone-free-plugins-renewal)
+- [紹介ページ](https://github.com/youtotto/kintone-field-usage-checker-plugin#readme)
 
 ## ダウンロードと導入
 
@@ -11,11 +25,11 @@
 
 | ファイル | 用途 |
 |---|---|
-| `field-usage-checker-1.2.0-free-bundle.zip` | 説明書付きの配布用 ZIP（おすすめ）。**ZIP を解凍し、中の `field-usage-checker-1.2.0-free-plugin.zip` を kintone へ読み込みます。bundle 自体は kintone に直接読み込みません** |
-| `field-usage-checker-1.2.0-free-plugin.zip` | kintone に直接読み込むプラグイン（bundle の中身と同じファイル） |
+| `appinsight-lite-1.3.0-free-bundle.zip` | 説明書付きの配布用 ZIP（おすすめ）。**ZIP を解凍し、中の `appinsight-lite-1.3.0-free-plugin.zip` を kintone へ読み込みます。bundle 自体は kintone に直接読み込みません** |
+| `appinsight-lite-1.3.0-free-plugin.zip` | kintone に直接読み込むプラグイン（bundle の中身と同じファイル） |
 | `SHA256SUMS.txt` | 上記 ZIP の SHA-256 |
 
-kintone への読み込みは、kintone システム管理 →「プラグイン」→「読み込む」で `field-usage-checker-1.2.0-free-plugin.zip` を ZIP のまま選びます。
+kintone への読み込みは、kintone システム管理 →「プラグイン」→「読み込む」で `appinsight-lite-1.3.0-free-plugin.zip` を ZIP のまま選びます。
 
 「このフィールド、どこで使っていたっけ？」を確認するための無料 kintone プラグインです。
 
@@ -71,9 +85,9 @@ kintone への読み込みは、kintone システム管理 →「プラグイン
 
 **「未検出」は、そのフィールドが削除して安全であることを保証するものではありません。**
 
-本ツールは、現在のアプリ設定から確認できる利用箇所だけを表示します。次のものは対象外で、これらで使われているフィールドも「未検出」と表示されます。
+本ツールは、現在のアプリ設定の使用箇所と、アップロード済みJavaScriptの静的な参照候補を表示します。次のものは対象外で、これらで使われているフィールドも「未検出」と表示されます。
 
-- JavaScript / CSS カスタマイズ（`record.フィールドコード.value` など）
+- URL指定/動的読込のJavaScript、CSS
 - REST API 経由の参照（外部システム・連携サービス・他のプラグインからのアクセス）
 - 他アプリからの参照（他アプリのルックアップの参照先・コピー元、他アプリの関連レコード一覧の参照先）
 - カスタムビューの HTML
@@ -82,7 +96,7 @@ kintone への読み込みは、kintone システム管理 →「プラグイン
 また、設定の取得に失敗した項目（権限がない場合など）は判定に含まれず、画面上部に一覧表示されます。フィールドを削除・変更する前に、これらの対象外の利用箇所も必ず確認してください。
 
 ### AppInsight for kintone
-JavaScript カスタマイズの解析や他アプリからの被参照を含む依存関係の分析は、[AppInsight for kintone](https://www.nestrec.com/appinsight) で確認できます。本プラグインは 1 アプリを手早く確認する用途に絞っています。
+他アプリからの被参照を含む依存関係の分析は、[AppInsight for kintone](https://www.nestrec.com/appinsight) で確認できます。本プラグインは 1 アプリを手早く確認する用途に絞っています。
 
 ---
 
@@ -106,6 +120,13 @@ JavaScript カスタマイズの解析や他アプリからの被参照を含む
 ---
 
 ## 更新履歴
+
+### v1.3.0
+- AppInsight Liteへ名称変更。既存ID・設定形式を継続。
+- 現在アプリのアップロードJSの静的解析、候補の行・列・抜粋、解析範囲の表示。
+- 型・配置フィルターと2種類のCSV出力を追加。
+- AppInsightシリーズ共通の絵柄にLiteバッジを追加。
+
 
 ### v1.2.0
 - 無料公開版。ライセンス確認機能と試用版を廃止
@@ -133,3 +154,22 @@ MIT License（[LICENSE](./LICENSE)）。商用利用・改変・再配布が可�
 
 NestRec https://github.com/youtotto
 kintone プラグイン／業務改善ツール開発
+
+## 現在アプリのJavaScript解析
+
+- 公開済みのカスタマイズ設定（PC・モバイル）に登録されたアップロードJSを取得し、同梱Acorn 8.15.0で構文解析します。解析対象のJSは実行しません。
+- メンバー参照、オブジェクトキー・分割代入、固定文字列・固定テンプレートとフィールドコードを照合。参照候補と文字列候補を区別し、ファイル名・行・列・抜粋・理由を表示します。変数名から対象レコードを断定しません。
+- コメント・正規表現の本文は候補にしません。別名の追跡、文字列の組み立て、動的コード、外部読込、URL指定JS、プラグイン内部、他アプリからの参照は解析しません。解析済みは全参照の網羅を意味しません。
+- URL指定・取得失敗・構文エラー・上限超過はファイル別に「解析できず」、動的プロパティ指定は「一部解析」と表示。各ファイル2 MiB、候補1000件、動的指定の記録は先頭100件まで。
+- APIの適用範囲（ALL/ADMIN/NONE）も表示。NONEでも登録ファイルを解析するため、検出は実行中の証明ではありません。
+- フィールド型・配置による絞り込みと、表示中のフィールド/使用箇所のCSVを追加。CSVには取得範囲と時刻を含め、BOM付きUTF-8・数式開始文字の無効化を行います。絞り込みで非表示になったメモも保存されます。
+- 既存の関連レコードの表示先フィールド名取得は継続しますが、他アプリからの逆参照走査は追加していません。
+- 本ツールは公開済み設定を使用します。フォームの未反映変更がある場合は、更新後に開き直してください。
+- ライセンス: source/vendor/acorn-LICENSE.txt（MIT）。配布ZIPには解析器の先頭コメントにライセンス全文を同梱します。
+
+API根拠: https://kintone.dev/en/docs/kintone/rest-api/apps/settings/get-customization/
+https://kintone.dev/en/docs/kintone/rest-api/files/download-file/
+
+## 問い合わせ・不具合報告
+
+[GitHub Issues](https://github.com/youtotto/kintone-field-usage-checker-plugin/issues)へ、版、再現操作、期待結果と実際の結果をお知らせください。認証情報、テナント名、個人情報や業務データは載せないでください。

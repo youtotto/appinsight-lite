@@ -4,15 +4,19 @@
     <div class="fuc-spinner" role="status" aria-label="読み込み中"></div>
   </div>
 
-  <h2 class="fuc-title">フィールド使用状況チェッカー</h2>
-  <p class="fuc-lead">このアプリのフィールド一覧と、現在のアプリ設定から確認できる使用箇所を表示します。フィールドごとにメモを残せます。</p>
+  <h2 class="fuc-title">AppInsight Lite</h2>
+  <p class="fuc-lead">このアプリの設定・JSから、フィールドの使用箇所を確認します。</p>
 
   <div class="fuc-notice" role="note">
-    <p class="fuc-notice-main">「未検出」は、そのフィールドが削除して安全であることを保証するものではありません。<br>
-      本ツールでは、現在のアプリ設定から確認できる利用箇所を表示します。JavaScript カスタマイズや他アプリからの参照など、一部は対象外です。</p>
+    <details class="fuc-help">
+      <summary>「未検出」でも削除の安全は保証されません。<span class="fuc-help-link"> 詳細</span></summary>
+    <p>他アプリからの参照は対象外です。</p>
     <p class="fuc-notice-sub">確認対象: 計算式・ルックアップ・関連レコード一覧（このアプリ側の条件）・一覧（表示列・絞り込み・並び替え・カレンダー）・通知・リマインダー・プロセス管理・グラフ・アプリアクション・アクセス権（レコード・フィールド）</p>
-    <p class="fuc-notice-sub">対象外: JavaScript カスタマイズ・CSS・REST API 経由の参照・他アプリからの参照（ルックアップ元・関連レコードの参照元）・カスタムビューの HTML・プラグイン設定</p>
-    <p class="fuc-notice-link">JavaScript や他アプリを含む依存関係を確認したい場合は AppInsight for kintone をご利用ください。</p>
+    <p class="fuc-notice-sub">対象外: URL指定JS・動的に読み込まれるJS・CSS・REST API 経由の参照・他アプリからの参照（ルックアップ元・関連レコードの参照元）・カスタムビューの HTML・プラグイン設定</p>
+    <p>JSは公開済みのPC・モバイル用アップロードファイルを解析します（1ファイル2 MiBまで）。コードは実行しません。件数の「使用箇所あり」にはJS候補を含みます。参照候補・文字列候補は使用確定ではなく、見つからなくても手作業での確認が必要です。未反映のフォーム変更がある場合はアプリ更新後に開き直してください。</p>
+    <p class="fuc-notice-sub">フィールドごとにメモを残せます。旧フィールド使用状況チェッカーの後継となる無料版です。</p>
+    <p class="fuc-notice-link">他アプリを含む依存関係を確認したい場合は AppInsight for kintone をご利用ください。</p>
+    </details>
   </div>
 
   <div class="fuc-row">
@@ -34,13 +38,23 @@
       <span class="fuc-toolbar-label">表示</span>
       <select id="fuc-filter" class="fuc-filter" aria-label="使用状況で絞り込み">
         <option value="all">すべて</option>
-        <option value="used">使用箇所あり</option>
+        <option value="used">使用箇所あり（JS候補含む）</option>
         <option value="unused">未検出</option>
       </select>
     </label>
     <span class="fuc-count" id="fuc-count" aria-live="polite"></span>
   </div>
 
+  <section class="fuc-analysis" aria-label="解析範囲">
+    <p id="fuc-overview">解析準備中</p>
+    <details><summary>JSの取得・解析結果</summary><div id="fuc-js-files"></div></details>
+  </section>
+  <div class="fuc-toolbar">
+    <label>型 <select id="fuc-type"><option value="">すべて</option></select></label>
+    <label>配置 <select id="fuc-placement"><option value="">すべて</option><option value="field">通常項目</option><option value="subtable">テーブル本体</option><option value="subtable-child">テーブル内</option><option value="reference">関連レコード</option></select></label>
+    <button type="button" id="fuc-csv-fields">表示中のフィールドCSV</button>
+    <button type="button" id="fuc-csv-usage">表示中の使用箇所CSV</button>
+  </div>
   <table class="fuc-table" id="fuc-table" hidden>
     <thead>
       <tr>
@@ -67,12 +81,20 @@
   <style>
     .fuc-root { position: relative; font-size: 14px; color: #333; }
     .fuc-title { margin: 8px 0 4px; font-size: 20px; }
-    .fuc-lead { margin: 0 0 12px; color: #555; }
-    .fuc-notice { border: 1px solid #f0c36d; background: #fff8e5; border-radius: 4px; padding: 10px 14px; margin: 0 0 16px; line-height: 1.6; }
+    .fuc-lead { margin: 0 0 4px; color: #555; }
+    .fuc-notice { margin: 0 0 8px; line-height: 1.6; }
     .fuc-notice p { margin: 0; }
     .fuc-notice-main { font-weight: bold; color: #7a5200; }
     .fuc-notice-sub { margin-top: 6px !important; color: #6b5a2e; font-size: 13px; }
     .fuc-notice-link { margin-top: 6px !important; color: #555; font-size: 13px; }
+    .fuc-help { margin: 0; }
+    .fuc-help-link { text-decoration: underline; }
+    .fuc-help summary, .fuc-analysis summary { cursor: pointer; color: #245a89; }
+    .fuc-help > p { margin-top: 8px; font-size: 13px; font-weight: normal; color: #555; }
+    .fuc-analysis { padding: 8px 12px; background: #f5f7f9; border-radius: 4px; line-height: 1.6; }
+    .fuc-analysis > p { margin: 0; }
+    .fuc-analysis details { margin-top: 4px; }
+    summary:focus-visible { outline: 2px solid #245a89; outline-offset: 3px; }
     .fuc-row { margin: 12px 0; }
     .fuc-checkbox { cursor: pointer; }
     .fuc-checkbox input { margin-right: 6px; }

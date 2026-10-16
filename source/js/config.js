@@ -7,7 +7,7 @@
    * 1 アプリ内の kintone 設定から確認できるフィールドの使用箇所を一覧する無料ツール。
    *   - 判定の起点はフォーム内の全フィールドコード（サブテーブル内も含む）
    *   - 条件式（filterCond / sort / 計算式）は識別子境界と文字列リテラルを考慮して照合する
-   *   - JavaScript / CSS / REST API / 他アプリからの参照は対象外（画面に明記）
+   *   - 登録済みJSの静的解析を追加。CSS / 外部REST API / 他アプリからの参照は対象外
    *   - 使用箇所が見つからない場合は「未検出」と表示する（削除の可否を断定する表現は使わない）
    */
 
@@ -17,6 +17,7 @@
 
   /** 使用箇所の種類（表示名とバッジの色分け） */
   const KINDS = {
+    js: { label: 'JS候補', cls: 'partial' },
     calc: { label: '計算式', cls: 'form' },
     lookup: { label: 'ルックアップ', cls: 'form' },
     ref: { label: '関連レコード', cls: 'form' },
@@ -530,6 +531,15 @@
         const b = badge(u.name ? `${kind.label}: ${u.name}` : kind.label, kind.cls);
         b.title = u.name ? `${kind.label}「${u.name}」で使用` : kind.label;
         wrap.appendChild(b);
+        if (u.snippet) {
+          const detail = document.createElement('details');
+          const summary = document.createElement('summary');
+          summary.textContent = u.certainty + '：' + u.reason;
+          const pre = document.createElement('pre');
+          pre.style.whiteSpace = 'pre-wrap'; pre.style.overflowWrap = 'anywhere';
+          pre.textContent = u.snippet;
+          detail.append(summary, pre); wrap.appendChild(detail);
+        }
       });
     }
     td.appendChild(wrap);
@@ -542,6 +552,8 @@
       const tr = document.createElement('tr');
       tr.className = `fuc-row fuc-row-${row.kind}`;
       tr.dataset.key = row.key;
+      tr.dataset.type = row.type;
+      tr.dataset.placement = row.kind;
       tr.dataset.code = row.code;
       tr.dataset.label = row.label;
       tr.dataset.judged = row.judged ? 'true' : 'false';
@@ -584,6 +596,8 @@
   /** 検索・フィルターを適用し、件数を更新する */
   function applyFilter() {
     const query = ($('fuc-search') ? $('fuc-search').value : '').trim().toLowerCase();
+    const type = $('fuc-type').value;
+    const placement = $('fuc-placement').value;
     const mode = $('fuc-filter') ? $('fuc-filter').value : 'all';
     const rows = Array.from(document.querySelectorAll('#fuc-tbody tr'));
     let shown = 0;
@@ -601,6 +615,8 @@
       if (visible && mode !== 'all') {
         visible = isJudged && (mode === 'used' ? isUsed : !isUsed);
       }
+      if (type && tr.dataset.type !== type) visible = false;
+      if (placement && tr.dataset.placement !== placement) visible = false;
       tr.classList.toggle('fuc-row-hidden', !visible);
       if (visible) shown += 1;
     });
@@ -636,6 +652,68 @@
   /* ─────────────────── 設定の取得 ─────────────────── */
 
   /** 各設定 API を個別に取得し、失敗したものは名前と理由を返す（1 つ失敗しても他は使う） */
+  let currentRows = [];
+  let jsCoverage = 'JS未取得';
+  async function downloadScript(fileKey) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 15000);
+    try {
+      const url = kintone.api.url('/k/v1/file.json', true) + '?fileKey=' + encodeURIComponent(fileKey);
+      const response = await fetch(url, { credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' }, signal: controller.signal });
+      if (!response.ok) throw new Error('ファイル取得失敗 HTTP ' + response.status);
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let size = 0, text = '';
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        size += value.byteLength;
+        if (size > window.AppInsightLiteJS.MAX_BYTES) { await reader.cancel(); throw new Error('取得上限（2 MiB）を超えています'); }
+        text += decoder.decode(value, { stream: true });
+      }
+      return text + decoder.decode();
+    } finally { clearTimeout(timer); }
+  }
+  async function loadJavaScript(appId, localCodes, usage, warnings) {
+    const target = $('fuc-js-files');
+    try {
+      const config = await apiGet('/k/v1/app/customize', { app: appId });
+      const result = await window.AppInsightLiteJS.scan(config, Array.from(localCodes), downloadScript);
+      const failed = result.files.filter(f => f.error).length;
+      jsCoverage = `JS ${result.files.length}登録／解析 ${result.files.length - failed}／解析できず ${failed}（適用範囲 ${result.scope || '不明'}）`;
+      for (const file of result.files) {
+        const detail = document.createElement('details');
+        const summary = document.createElement('summary');
+        summary.textContent = `${file.platform}: ${file.name} — ${file.status} (${file.hits.length}候補)`;
+        detail.appendChild(summary);
+        const text = document.createElement('p');
+        text.textContent = file.error || (file.issues.length ? file.issues.slice(0, 50).map(i => `${i.line}行: ${i.reason}`).join('\n') + (file.issues.length > 50 ? '\n（先頭50件を表示）' : '') : '静的に確認できる範囲を解析しました。別名・文字列結合・外部コードなどは検出できない場合があります。');
+        text.style.whiteSpace = 'pre-wrap'; detail.appendChild(text); target.appendChild(detail);
+        if (file.error) warnings.push(`JS ${file.name}: ${file.error}`);
+        for (const hit of file.hits) {
+          if (Object.prototype.hasOwnProperty.call(usage, hit.code)) usage[hit.code].push({ ...hit, kind: 'js', name: `${file.platform}/${file.name}:${hit.line}:${hit.column}`, file: file.name });
+        }
+      }
+    } catch (e) {
+      jsCoverage = 'JS設定を取得できませんでした';
+      warnings.push(jsCoverage + '（' + describeError(e) + '）');
+    }
+    $('fuc-overview').textContent = jsCoverage;
+  }
+  function exportCsv(details) {
+    const visible = new Map(Array.from(document.querySelectorAll('#fuc-tbody tr')).filter(tr => !tr.classList.contains('fuc-row-hidden')).map(tr => [tr.dataset.key, tr]));
+    const rows = currentRows.filter(row => visible.has(row.key));
+    const context = [String(kintone.app.getId()), new Date().toISOString(), '表示中のみ／未検出は削除の安全を保証しません／' + jsCoverage];
+    const output = [details ? ['アプリID', '出力日時', '範囲', 'コード', '名称', '種別', '使用箇所', '判定', '行', '列', '抜粋'] : ['アプリID', '出力日時', '範囲', 'コード', '名称', '型', '配置', '使用箇所・候補数', 'メモ']];
+    for (const row of rows) {
+      if (details) for (const use of row.usage || []) output.push([...context, row.code, row.label, use.kind, use.name, use.certainty || '設定内の参照', use.line || '', use.column || '', use.snippet || '']);
+      else output.push([...context, row.code, row.label, row.type, row.kind, row.judged ? (row.usage || []).length : '判定対象外', visible.get(row.key).querySelector('textarea')?.value || '']);
+    }
+    const url = URL.createObjectURL(new Blob([window.AppInsightLiteJS.csv(output)], { type: 'text/csv;charset=utf-8' }));
+    const a = document.createElement('a'); a.href = url; a.download = 'appinsight-lite-' + (details ? 'usage' : 'fields') + '.csv'; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
   async function fetchSettings(appId) {
     const entries = Object.entries(SETTING_SOURCES);
     const results = await Promise.allSettled(entries.map(([, [path]]) => apiGet(path, { app: appId })));
@@ -663,6 +741,10 @@
     $('fuc-cancel-btn').addEventListener('click', cancel);
     $('fuc-search').addEventListener('input', applyFilter);
     $('fuc-filter').addEventListener('change', applyFilter);
+    $('fuc-type').addEventListener('change', applyFilter);
+    $('fuc-placement').addEventListener('change', applyFilter);
+    $('fuc-csv-fields').addEventListener('click', () => exportCsv(false));
+    $('fuc-csv-usage').addEventListener('click', () => exportCsv(true));
 
     showLoading();
     const warnings = [];
@@ -683,7 +765,13 @@
 
       const usage = extractUsage({ appId, properties, ...settings });
       const localCodes = collectFieldCodes(properties);
+      await loadJavaScript(appId, localCodes, usage, warnings);
       const rows = await buildRows({ properties, layout, usage });
+      currentRows = rows;
+      for (const type of [...new Set(rows.map(r => r.type))].filter(Boolean).sort()) {
+        const option = document.createElement('option'); option.value = type; option.textContent = TYPE_LABELS[type] || type; $('fuc-type').appendChild(option);
+      }
+      $('fuc-overview').textContent += ' ／ 設定API取得 ' + (Object.keys(SETTING_SOURCES).length - failures.length) + '/' + Object.keys(SETTING_SOURCES).length + ' ／ 取得日時 ' + new Date().toLocaleString();
 
       renderRows(rows, notes, localCodes);
       $('fuc-toolbar').hidden = false;
